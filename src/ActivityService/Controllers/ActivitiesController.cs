@@ -88,4 +88,22 @@ public class ActivitiesController : ControllerBase
         return BadRequest("Could not save changes to the database");
         
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteActivity(Guid id)
+    {
+        var activity = await _context.Activities.FindAsync(id);
+
+        if(activity == null)
+        {
+            return NotFound();
+        }
+
+        _context.Activities.Remove(activity);
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if (!result) return BadRequest("Could not save changes to the database");
+
+        return Ok();
+    }
 }
