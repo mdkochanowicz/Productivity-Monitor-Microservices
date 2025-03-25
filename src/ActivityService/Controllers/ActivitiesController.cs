@@ -1,5 +1,6 @@
 using ActivityService.Data;
 using ActivityService.DTOs;
+using ActivityService.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,5 +43,21 @@ public class ActivitiesController : ControllerBase
         }
 
         return _mapper.Map<ActivityDto>(activity);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ActivityDto>> CreateActivity(CreateActivityDto activityDto)
+    {
+        var activity = _mapper.Map<Activity>(activityDto);
+        //add currrent user as an author
+        activity.Author = "test";
+
+        _context.Activities.Add(activity);
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if (!result)
+        {
+            return BadRequest("Could not save changes to the database");
+        }
     }
 }
